@@ -65,7 +65,6 @@ llama-server \
 python run_bfcl_evalscope.py \
   --api-url http://127.0.0.1:1235/v1 \
   --api-key EMPTY \
-  --limit 50 \
   --subsets parallel_multiple javascript live_parallel_multiple irrelevance
 ```
 
@@ -77,7 +76,6 @@ python run_bfcl_evalscope.py \
 python run_bfcl_evalscope.py \
   --api-url http://127.0.0.1:1235/v1 \
   --api-key EMPTY \
-  --limit 0
 ```
 
 `--limit 0` 表示不限制条数，跑完整数据集。
@@ -126,7 +124,6 @@ python run_bfcl_evalscope.py \
 | `--model-tag` | *(同 model-name)* | 结果目录的命名标签 |
 | `--api-url` | `http://127.0.0.1:1235/v1` | OpenAI-compatible API 地址 |
 | `--api-key` | `EMPTY` | API key。本地服务通常填 `EMPTY` |
-| `--limit` | `50` | 测试条数。`0` = 不限制（正式评测） |
 | `--output-dir` | `results_bfcl` | 结果输出目录 |
 | `--temperature` | `0.0` | 评测温度。Agent/tool calling 对比建议设为 0 |
 | `--max-tokens` | `32000` | 最大输出 token 数 |
@@ -237,7 +234,6 @@ python run_bfcl_evalscope.py --model-name "my-custom-model"
 ### Q: 多轮评测为什么很慢？
 
 多轮任务需要模型与工具多轮交互，每轮都需要完整的 API 请求。本地 CPU/GPU 推理速度直接影响耗时。建议：
-- 快速测试先用 `--limit 20`
 - 确保 `--max-tokens` 足够大（默认 32000）
 - `--temperature` 设为 0 保证结果可复现
 
