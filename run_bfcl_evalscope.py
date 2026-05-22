@@ -123,6 +123,20 @@ def main():
         action="store_true",
         help="如果你的本地 API 不支持 OpenAI tools/tool_calls，可以加这个参数。"
     )
+
+    parser.add_argument(
+        "--enable-thinking",
+        action="store_true",
+        default=False,
+        help="开启思考模式（thinking mode）。适用于 DeepSeek v4-flash 等支持思考模式的模型。"
+    )
+
+    parser.add_argument(
+        "--reasoning-effort",
+        choices=["low", "medium", "high"],
+        default=None,
+        help="思考强度。仅在 --enable-thinking 时有效。默认 high。"
+    )
     
     parser.add_argument(
         "--subsets",
@@ -186,6 +200,13 @@ def main():
         "parallel_tool_calls": True,
     }
 
+    # DeepSeek thinking mode configuration
+    if args.enable_thinking:
+        generation_config["extra_body"] = {"thinking": {"type": "enabled"}}
+        # reasoning_effort: map 'max' to 'high' for compatibility, or pass as-is
+        effort = args.reasoning_effort or "high"
+        generation_config["reasoning_effort"] = effort
+
     task_cfg = TaskConfig(
         model=model_name,
         api_url=args.api_url,
@@ -211,6 +232,8 @@ def main():
         "max_tokens": args.max_tokens,
         "eval_batch_size": args.eval_batch_size,
         "is_fc_model": is_fc_model,
+        "enable_thinking": args.enable_thinking,
+        "reasoning_effort": args.reasoning_effort,
     }, ensure_ascii=False, indent=2))
 
     run_task(task_cfg)

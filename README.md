@@ -104,9 +104,28 @@ python run_bfcl_evalscope.py \
 python run_bfcl_evalscope.py \
   --api-url https://api.deepseek.com/v1 \
   --model-name deepseek-v4-flash \
-  --api-key sk-your-key-here \
+  --api-key *** \
   --subsets parallel_multiple javascript live_parallel_multiple irrelevance
 ```
+
+### 开启思考模式（Thinking Mode）
+
+部分模型（如 DeepSeek v4-flash）支持思考模式，可在评测时启用：
+
+```bash
+python run_bfcl_evalscope.py \
+  --api-url https://api.deepseek.com/v1 \
+  --model-name deepseek-v4-flash \
+  --api-key *** \
+  --subsets parallel_multiple javascript live_parallel_multiple irrelevance \
+  --enable-thinking \
+  --reasoning-effort high
+```
+
+> **注意：**
+> - 思考模式下，API 会忽略 `temperature`、`top_p`、`presence_penalty`、`frequency_penalty` 等采样参数
+> - `--reasoning-effort` 仅在 `--enable-thinking` 时生效，可选 `low`、`medium`、`high`
+> - 本地部署的模型（如 llama.cpp、Ollama）通常不支持此参数，不加 `--enable-thinking` 即可
 
 ### 非 Function Calling 模型
 
@@ -133,7 +152,9 @@ python run_bfcl_evalscope.py \
 | `--eval-batch-size` | `1` | 评测批次大小 |
 | `--is-fc-model` | `True` | 是否按原生 function calling 模型评测 |
 | `--not-fc-model` | `False` | API 不支持 OpenAI tools 时加上此参数 |
-| `--subsets` | *(全部 17 个)* | 指定只跑哪些 BFCL-v3 子集 |
+|| `--subsets` | *(全部 17 个)* | 指定只跑哪些 BFCL-v3 子集 |
+|| `--enable-thinking` | `False` | 开启思考模式（thinking mode）。适用于 DeepSeek v4-flash 等支持思考模式的模型 |
+|| `--reasoning-effort` | `None` | 思考强度：`low`、`medium`、`high`。仅在 `--enable-thinking` 时有效，默认 `high` |
 
 ## 评测子集说明
 
@@ -244,6 +265,24 @@ python run_bfcl_evalscope.py --model-name "my-custom-model"
 ### Q: 如何切换到 BFCL-v4？
 
 修改脚本中 `datasets=["bfcl_v3"]` 为 `datasets=["bfcl_v4"]`，并更新 `subset_list`。Web Search 子集需要设置 `SERPAPI_API_KEY` 环境变量。
+
+### Q: 思考模式（Thinking Mode）是什么？
+
+部分模型（如 DeepSeek v4-flash）支持"思考模式"，模型在生成最终回复前会先进行内部推理。启用方式：
+
+```bash
+python run_bfcl_evalscope.py \
+  --api-url https://api.deepseek.com/v1 \
+  --model-name deepseek-v4-flash \
+  --api-key sk-*** \
+  --enable-thinking \
+  --reasoning-effort high
+```
+
+- `--enable-thinking`：开启思考模式
+- `--reasoning-effort`：控制思考强度，可选 `low`、`medium`、`high`
+- 默认不开启（`--enable-thinking` 默认 `False`），不影响本地模型评测
+- 思考模式下，API 会忽略 `temperature`、`top_p` 等采样参数
 
 ---
 

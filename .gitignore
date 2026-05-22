@@ -1,2 +1,4 @@
 .DS_Store
 results_bfcl/*
+__pycache__/
+*.pyc
